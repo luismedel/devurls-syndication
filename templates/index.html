@@ -10,6 +10,9 @@
                 <a href="all.xml">rss</a> |
                 <a href="all.atom">atom</a>
             </li>
+        </ul>
+
+        <ul>
             {% for feed in feeds %}
             <li>
                 <a href="{{ feed.link }}">{{ feed.title }}</a>:
