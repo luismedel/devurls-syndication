@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <title>{{ title }}</title>
+    <title><![CDATA[{{ title }}]]></title>
     <link rel="self" href="{{ link }}"/>
     <id>http://dev.fyicenter.com/atom_xml.php</id>
-    <updated>{{ now }}</updated>
     {% for item in items %}
     <entry>
-        <title>{{ item.title }}</title>
+        <title><![CDATA[{{ item.title }}]]></title>
         <link rel="alternate" href="{{ item.link }}"/>
         <id>{{ item.link }}</id>
         <updated>{{ item.updated }}</updated>
