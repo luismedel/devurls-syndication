@@ -7,7 +7,7 @@
     <entry>
         <title><![CDATA[{{ item.title }}]]></title>
         <link rel="alternate" href="{{ item.link }}"/>
-        <id>{{ item.link }}</id>
+        <id><![CDATA[{{ item.link }}]]></id>
         <updated>{{ item.updated }}</updated>
     </entry>
     {% endfor %}
