@@ -68,12 +68,9 @@ def render_index(feeds: list) -> None:
 
 
 if __name__ == "__main__":
-    TITLE = "DevURLs"
-    URL = "https://devurls.com/"
-
     os.makedirs("output", exist_ok=True)
 
-    html_content = download_html(URL)
+    html_content = download_html("https://devurls.com/")
 
     feeds = process_html(html_content)
     all_items = []
@@ -87,8 +84,8 @@ if __name__ == "__main__":
         render(ATOM_TEMPLATE, feed, "atom")
 
     all_feeds = {
-        "title": TITLE,
-        "link": URL,
+        "title": "devurls syndication",
+        "link": "https://luismedel.github.io/devurls-syndication/",
         "slug": "all",
         "items": all_items
     }
