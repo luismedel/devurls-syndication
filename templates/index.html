@@ -11,7 +11,8 @@
                 <a href="all.atom">atom</a>
             </li>
             {% for feed in feeds %}
-            <li>{{ feed.title }} ({{ feed.url }})
+            <li>
+                <a href="{{ feed.link }}">{{ feed.title }}</a>:
                 <a href="{{ feed.slug }}.xml">rss</a> |
                 <a href="{{ feed.slug }}.atom">atom</a>
             </li>
