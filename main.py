@@ -4,39 +4,11 @@ import bs4
 import jinja2
 import re
 
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader("./templates"))
 
-RSS_TEMPLATE = """
-<rss version="2.0">
-<channel>
-    <title>{{ title }}</title>
-    <link>{{ link }}</link>
-    <description>{{ description }}</description>
-    {% for item in items %}
-    <item>
-        <title>{{ item.title }}</title>
-        <link>{{ item.link }}</link>
-        <pubDate>{{ item.published }}</pubDate>
-    </item>
-    {% endfor %}
-</channel>
-</rss>
-"""
-_rss_template = jinja2.Template(RSS_TEMPLATE)
-
-
-INDEX_TEMPLATE = """
-<html>
-    <body>
-        <ul>
-        <li><a href="all.xml">All feeds</a></li>
-        {% for feed in feeds %}
-            <li><a href="{{ feed.slug }}.xml">{{ feed.title }}</a></li>
-        {% endfor %}
-        </ul>
-    </body>
-</html>
-"""
-_index_template = jinja2.Template(INDEX_TEMPLATE)
+ATOM_TEMPLATE = jinja_env.get_template("template.atom")
+RSS_TEMPLATE = jinja_env.get_template("template.rss")
+INDEX_TEMPLATE = jinja_env.get_template("index.html")
 
 
 def slugify(value: str) -> str:
@@ -85,13 +57,15 @@ def process_html(html) -> dict:
     return result
 
 
-def render_feed(feed: dict) -> None:
-    with open(f"output/{feed["slug"]}.xml", "w") as f:
-        f.write(_rss_template.render(**feed))
+def render(template: jinja2.Template, feed: dict, ext: str) -> None:
+    with open(f"output/{feed['slug']}.{ext}", "w") as f:
+        f.write(template.render(**feed))
 
-def render_index(feeds: dict) -> None:
+
+def render_index(feeds: list) -> None:
     with open(f"output/index.html", "w") as f:
-        f.write(_index_template.render(feeds=feeds.values()))
+        f.write(INDEX_TEMPLATE.render(feeds=feeds))
+
 
 if __name__ == "__main__":
     TITLE = "DevURLs"
@@ -103,19 +77,22 @@ if __name__ == "__main__":
 
     feeds = process_html(html_content)
     all_items = []
+
     for slug, feed in feeds.items():
+        all_items.extend(feed["items"])
         if not slug:
             print(f"[*] Item without slug? {feed}")
             continue
-        render_feed(feed)
+        render(RSS_TEMPLATE, feed, "xml")
+        render(ATOM_TEMPLATE, feed, "atom")
 
-        all_items.extend(feed["items"])
-
-    render_feed({
+    all_feeds = {
         "title": TITLE,
         "link": URL,
         "slug": "all",
         "items": all_items
-    })
+    }
 
-    render_index(feeds)
+    render(RSS_TEMPLATE, all_feeds, "xml")
+    render(ATOM_TEMPLATE, all_feeds, "atom")
+    render_index(feeds.values())

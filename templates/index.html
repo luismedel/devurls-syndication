@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>devurls syndication</title>
+    </head>
+    <body>
+        <h1>devurls syndication</h1>
+
+        <ul>
+            <li>As a single feed
+                <a href="all.xml">rss</a> |
+                <a href="all.atom">atom</a>
+            </li>
+            {% for feed in feeds %}
+            <li>{{ feed.title }} ({{ feed.url }})
+                <a href="{{ feed.slug }}.xml">rss</a> |
+                <a href="{{ feed.slug }}.atom">atom</a>
+            </li>
+            {% endfor %}
+        </ul>
+        </body>
+</html>
