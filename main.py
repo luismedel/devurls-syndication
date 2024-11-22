@@ -9,6 +9,7 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader("./templates"))
 ATOM_TEMPLATE = jinja_env.get_template("template.atom")
 RSS_TEMPLATE = jinja_env.get_template("template.rss")
 INDEX_TEMPLATE = jinja_env.get_template("index.html")
+OPML_TEMPLATE = jinja_env.get_template("index.opml")
 
 
 def slugify(value: str) -> str:
@@ -62,9 +63,9 @@ def render(template: jinja2.Template, feed: dict, ext: str) -> None:
         f.write(template.render(**feed))
 
 
-def render_index(feeds: list) -> None:
-    with open(f"output/index.html", "w") as f:
-        f.write(INDEX_TEMPLATE.render(feeds=feeds))
+def render_index(template: jinja2.Template, feeds: list, ext: str) -> None:
+    with open(f"output/index.{ext}", "w") as f:
+        f.write(template.render(feeds=feeds))
 
 
 if __name__ == "__main__":
@@ -92,4 +93,5 @@ if __name__ == "__main__":
 
     render(RSS_TEMPLATE, all_feeds, "xml")
     render(ATOM_TEMPLATE, all_feeds, "atom")
-    render_index(feeds.values())
+    render_index(INDEX_TEMPLATE, feeds.values(), "html")
+    render_index(OPML_TEMPLATE, feeds.values(), "opml")
