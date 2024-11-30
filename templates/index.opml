@@ -7,7 +7,7 @@
     </head>
     <body>
         {% for feed in feeds %}
-        <outline htmlUrl="{{ feed.link }}" title="{{ feed.title }}" xmlUrl="https://luismedel.github.io/devurls-syndication/{{ feed.slug }}.xml"  />
+        <outline htmlUrl="{{ feed.link }}" title="{{ feed.title }}" xmlUrl="https://luismedel.github.io/devurls-syndication/{{ url_slug }}/{{ feed.slug }}.xml"  />
         {% endfor %}
     </body>
 </opml>

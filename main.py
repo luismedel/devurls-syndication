@@ -31,7 +31,8 @@ def download_html(url):
         print(f"An error occurred: {e}")
         return None
 
-def process_html(html) -> dict:
+
+def process_html(html: str) -> dict:
     soup = bs4.BeautifulSoup(html, 'html.parser')
 
     result: dict = {}
@@ -63,12 +64,12 @@ def process_html(html) -> dict:
 
 def render(template: jinja2.Template, slug: str, feed: dict, ext: str) -> None:
     with open(f"output/{slug}/{feed['slug']}.{ext}", "w") as f:
-        f.write(template.render(**feed))
+        f.write(template.render(url_slug=slug, **feed))
 
 
 def render_index(template: jinja2.Template, slug: str, feeds: list, ext: str) -> None:
     with open(f"output/{slug}/index.{ext}", "w") as f:
-        f.write(template.render(feeds=feeds))
+        f.write(template.render(feeds=feeds, url_slug=slug))
 
 
 def generate(url: str) -> str:
@@ -92,7 +93,7 @@ def generate(url: str) -> str:
         render(ATOM_TEMPLATE, url_slug, feed, "atom")
 
     all_feeds = {
-        "title": "devurls syndication",
+        "title": f"{url_slug} syndication",
         "link": f"{ROOT_URL}{url_slug}/",
         "slug": "all",
         "items": all_items

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title><![CDATA[{{ title }}]]></title>
     <link rel="self" href="{{ link }}"/>
-    <id>https://luismedel.github.io/devurls-syndication/</id>
+    <id>https://luismedel.github.io/devurls-syndication/{{ url_slug }}</id>
     {% for item in items %}
     <entry>
         <title><![CDATA[{{ item.title }}]]></title>
