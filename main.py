@@ -67,9 +67,9 @@ def render(template: jinja2.Template, slug: str, feed: dict, ext: str) -> None:
         f.write(template.render(url_slug=slug, **feed))
 
 
-def render_index(template: jinja2.Template, slug: str, feeds: list, ext: str) -> None:
+def render_index(template: jinja2.Template, url: str, slug: str, feeds: list, ext: str) -> None:
     with open(f"output/{slug}/index.{ext}", "w") as f:
-        f.write(template.render(feeds=feeds, url_slug=slug))
+        f.write(template.render(feeds=feeds, url=url, url_slug=slug))
 
 
 def generate(url: str) -> str:
@@ -101,8 +101,8 @@ def generate(url: str) -> str:
 
     render(RSS_TEMPLATE, url_slug, all_feeds, "xml")
     render(ATOM_TEMPLATE, url_slug, all_feeds, "atom")
-    render_index(INDEX_TEMPLATE, url_slug, feeds.values(), "html")
-    render_index(OPML_TEMPLATE, url_slug, feeds.values(), "opml")
+    render_index(INDEX_TEMPLATE, url, url_slug, feeds.values(), "html")
+    render_index(OPML_TEMPLATE, url, url_slug, feeds.values(), "opml")
 
     return f"{ROOT_URL}{url_slug}/"
 
