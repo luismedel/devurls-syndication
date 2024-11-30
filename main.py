@@ -4,12 +4,15 @@ import bs4
 import jinja2
 import re
 
+ROOT_URL = "https://luismedel.github.io/devurls-syndication/"
+
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader("./templates"))
 
 ATOM_TEMPLATE = jinja_env.get_template("template.atom")
 RSS_TEMPLATE = jinja_env.get_template("template.rss")
 INDEX_TEMPLATE = jinja_env.get_template("index.html")
 OPML_TEMPLATE = jinja_env.get_template("index.opml")
+HOME_TEMPLATE = jinja_env.get_template("home.html")
 
 
 def slugify(value: str) -> str:
@@ -58,21 +61,25 @@ def process_html(html) -> dict:
     return result
 
 
-def render(template: jinja2.Template, feed: dict, ext: str) -> None:
-    with open(f"output/{feed['slug']}.{ext}", "w") as f:
+def render(template: jinja2.Template, slug: str, feed: dict, ext: str) -> None:
+    with open(f"output/{slug}/{feed['slug']}.{ext}", "w") as f:
         f.write(template.render(**feed))
 
 
-def render_index(template: jinja2.Template, feeds: list, ext: str) -> None:
-    with open(f"output/index.{ext}", "w") as f:
+def render_index(template: jinja2.Template, slug: str, feeds: list, ext: str) -> None:
+    with open(f"output/{slug}/index.{ext}", "w") as f:
         f.write(template.render(feeds=feeds))
 
 
-if __name__ == "__main__":
-    os.makedirs("output", exist_ok=True)
+def generate(url: str) -> str:
+    print(f"[*] Processing {url}...")
+    
+    url_slug = slugify(url.replace("https://", "")
+                       .replace("http://", "")
+                       .replace("/", ""))
+    os.makedirs(f"output/{url_slug}", exist_ok=True)
 
-    html_content = download_html("https://devurls.com/")
-
+    html_content = download_html(url)
     feeds = process_html(html_content)
     all_items = []
 
@@ -81,17 +88,33 @@ if __name__ == "__main__":
         if not slug:
             print(f"[*] Item without slug? {feed}")
             continue
-        render(RSS_TEMPLATE, feed, "xml")
-        render(ATOM_TEMPLATE, feed, "atom")
+        render(RSS_TEMPLATE, url_slug, feed, "xml")
+        render(ATOM_TEMPLATE, url_slug, feed, "atom")
 
     all_feeds = {
         "title": "devurls syndication",
-        "link": "https://luismedel.github.io/devurls-syndication/",
+        "link": f"{ROOT_URL}{url_slug}/",
         "slug": "all",
         "items": all_items
     }
 
-    render(RSS_TEMPLATE, all_feeds, "xml")
-    render(ATOM_TEMPLATE, all_feeds, "atom")
-    render_index(INDEX_TEMPLATE, feeds.values(), "html")
-    render_index(OPML_TEMPLATE, feeds.values(), "opml")
+    render(RSS_TEMPLATE, url_slug, all_feeds, "xml")
+    render(ATOM_TEMPLATE, url_slug, all_feeds, "atom")
+    render_index(INDEX_TEMPLATE, url_slug, feeds.values(), "html")
+    render_index(OPML_TEMPLATE, url_slug, feeds.values(), "opml")
+
+    return f"{ROOT_URL}{url_slug}/"
+
+
+if __name__ == "__main__":
+    pages: dict = {}
+    
+    for url in ["https://devurls.com/", "https://techurls.com/", 
+                "https://sciurls.com/", "https://mathurls.com/",
+                "https://hwurls.com/", "https://finurls.com/",
+                "https://physurls.com/", "https://tuxurls.com/"]:
+        output = generate(url)
+        pages[url] = output
+
+    with open("output/index.html", "w") as f:
+        f.write(HOME_TEMPLATE.render(pages=pages))

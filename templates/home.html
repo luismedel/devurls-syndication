@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>*urls syndication</title>
+    </head>
+    <body>
+        <h1>*urls syndication</h1>
+
+        {% for k,v in pages.items() %}
+        <ul>
+            <li><a href="{{ v }}">{{ k }} syndication</a></li>
+        </ul>
+        {% endfor %}
+        </body>
+</html>
